@@ -25,7 +25,7 @@ def get_subject_teachers(id, client)
   else
     puts "Subject: #{query[0]['subject']}\nTeachers:"
 
-      query.each do |t|
+    query.each do |t|
       puts "#{t['first_name']}#{t['middle_name']} #{t['last_name']}"
     end
   end
@@ -77,4 +77,64 @@ def get_teachers_list_by_letter(letter, client)
     end
   end
 
+end
+
+def set_md5(digest, client)
+  concat_teachers = "SELECT CONCAT (first_name,
+                    middle_name,
+                    last_name,
+                    birth_date,
+                    subjectId,
+                    current_age) AS teacher
+                    FROM teachers_ian"
+  query = client.query(concat_teachers).to_a
+
+  id = 0
+  query.each do |t|
+    client.query("UPDATE teachers_ian SET md5 = '#{digest.hexdigest(t.to_s)}' WHERE id = #{id += 1}")
+  end
+end
+
+def get_class_info(class_id, client)
+  get_class_info = "SELECT c.name AS name,
+                    t.first_name, t.middle_name, t.last_name
+                    FROM classes_ian c
+                    JOIN teachers_ian t ON c.responsible_teacher_id = t.id
+                    WHERE c.id = #{class_id}"
+
+  get_involved_teachers = "SELECT t.first_name, t.middle_name, t.last_name
+                           FROM teachers_classes_ian tc
+                           JOIN teachers_ian t ON tc.teacher_id = t.id
+                           JOIN classes_ian c ON tc.class_id = c.id
+                           WHERE c.id = #{class_id}"
+
+  query_info = client.query(get_class_info).to_a
+  query_involved_teachers = client.query(get_involved_teachers).to_a
+
+  if query_info.count.zero?
+    puts "Class with ID #{class_id} was not found!"
+  else
+    puts "Class name: #{query_info[0]['name']}\nResponsible teacher: #{query_info[0]['first_name']} #{query_info[0]['middle_name']} #{query_info[0]['last_name']}"
+    print "Involved teachers: "
+    query_involved_teachers.each do |t|
+      print "#{t['first_name']} #{t['middle_name']} #{t['last_name']}, "
+    end
+  end
+end
+
+def get_teachers_by_year(year, client)
+  get_teacher_by_year = "SELECT first_name, middle_name, last_name
+                         FROM teachers_ian
+                         WHERE YEAR(birth_date) = #{year}"
+
+  query = client.query(get_teacher_by_year).to_a
+
+  if query.count.zero?
+    puts "No teacher was born in the year #{year}"
+  else
+    print "Teachers born in #{year}: "
+    query.each do |t|
+      print "#{t['first_name']} #{t['middle_name']} #{t['last_name']}, "
+    end
+  end
 end
