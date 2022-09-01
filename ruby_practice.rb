@@ -20,4 +20,11 @@ client = Mysql2::Client.new(host: "db09.blockshopper.com", username: ENV['DB09_L
 
 #get_teachers_by_year(1959, client)
 
+#random_date(Date.parse("1910-01-01"), Date.parse("2022-01-01"))
+
+#random_last_names(4, client)
+
+#random_first_name(80, client)
+
+generate_peoples(10000, client)
 client.close
