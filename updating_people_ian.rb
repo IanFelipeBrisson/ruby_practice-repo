@@ -8,12 +8,12 @@ client = Mysql2::Client.new(:host => "localhost",
 def updating_peoples(client)
   peoples_ian = "SELECT * FROM people_ian"
 
-  query = client.query(peoples_ian).to_a
+  @peoples = @peoples ? @peoples : client.query(peoples_ian).to_a
 
-  query.each do |p|
-    client.query("UPDATE people_ian SET last_name = CONCAT(last_name, ' updated') WHERE id = #{p[id]}")
-    client.query("UPDATE people_ian SET email = '#{p['email'].downcase}', email2 = '#{p['email2'].downcase}' WHERE id = #{p['id']}")
-    client.query("UPDATE people_ian SET profession = '#{p['profession'].strip}' WHERE id = #{p['id']}")
+  @peoples.each do |p|
+    client.query("UPDATE people_ian SET last_name = '#{(p['last_name'] + 'updated').gsub(/(updated) \1/, '\1')}',
+                  email = '#{p['email'].downcase}', email2 = '#{p['email2'].downcase}',
+                  profession = '#{p['profession'].strip}' WHERE id = #{p['id']}")
   end
 end
 
