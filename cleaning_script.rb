@@ -35,11 +35,11 @@ def cleaning_name(client)
 
   query.each do |row|
     client.query("UPDATE montana_public_district_report_card_uniq_dist_ian
-                  SET clean_name = '#{(row['name'] + ' District').gsub(/(Elem)/, 'Elementary School').
-      gsub(/(H S)/, 'High School').
-      gsub(/(K-12)|(K-12 Schools)/, 'Public School').
-      gsub(/(w+) \1/, '\1')}'
+                  SET clean_name = '#{(row['name'] + ' District').gsub(/(Elem|El)/, 'Elementary School').
+      gsub(/(H S|HS|Dist H S)/, 'High School').
+      gsub(/Schls|Schools/, 'School').
+      gsub(/K-12|Public|School K-12/, 'Public School').
+      gsub(/(\w+) \1/, '\1')}'
       WHERE id = #{row['id']}")
   end
-
 end
