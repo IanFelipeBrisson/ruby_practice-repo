@@ -35,7 +35,7 @@ def cleaning_name(client)
 
   query.each do |row|
     client.query("UPDATE montana_public_district_report_card_uniq_dist_ian
-                  SET clean_name = '#{(row['name'] + ' District').gsub(/(Elem|El)/, 'Elementary School').
+                  SET clean_name = '#{(row['name'] + ' District').gsub(/(Elem|\bEl\b)/, 'Elementary School').
       gsub(/(H S|HS|Dist H S)/, 'High School').
       gsub(/Schls|Schools/, 'School').
       gsub(/K-12|Public|School K-12/, 'Public School').
